@@ -25,3 +25,6 @@ MLflow server (locally):
 export GS_ML_MODELS_BUCKET_ID="$(bash ./infra/gcp/terraform/output.sh GS_ML_MODELS_BUCKET_ID)"
 bash ./infra/local/mlflow-server.sh
 ```
+
+Run ML pipelines:
+- [analytics/ml-pipelines/duration/README.md](./analytics/ml-pipelines/duration/README.md)
