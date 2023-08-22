@@ -4,6 +4,8 @@
 #   TERRAFORM_OUTPUT="$(bash output.sh)"
 #   GS_ML_MODELS_BUCKET_ID="$(bash output.sh GS_ML_MODELS_BUCKET_ID)"
 #   GS_ML_MODELS_BUCKET_ID="$(TERRAFORM_OUTPUT="${TERRAFORM_OUTPUT}" bash output.sh GS_ML_MODELS_BUCKET_ID)"
+# 
+#   WEB_CONTAINER_REGISTRY_URL="$(bash output.sh WEB_CONTAINER_REGISTRY_URL)"
 
 set -e
 
@@ -20,6 +22,9 @@ fi
 case "${EXTRACT_VALUE}" in
   GS_ML_MODELS_BUCKET_ID)
     echo "$(jq -r '.ml_models_bucket.value.id' <<< "${TERRAFORM_OUTPUT}")";;
+
+  WEB_CONTAINER_REGISTRY_URL)
+    echo "$(jq -r '.web_containers.value.registry_url' <<< "${TERRAFORM_OUTPUT}")";;
 
   *)
     echo >&2 "Unknown EXTRACT_VALUE: \"${EXTRACT_VALUE}\""

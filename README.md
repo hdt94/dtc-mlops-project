@@ -1,5 +1,15 @@
 # MLOps project - course from DataTalksClub
 
+Online service for prediction of duration taxi ride.
+
+You can request online service:
+```bash
+URL=https://rides-ucpkfmi6pq-ue.a.run.app/predict  # Cloud Run service URL
+curl -X POST \
+    -H 'Content-type: application/json' \
+    -d '{"PULocationID": 43, "DOLocationID": 151, "trip_distance": 1.01}' \
+    "${URL}"
+```
 
 ## Up and running
 
@@ -29,4 +39,20 @@ bash ./infra/local/mlflow-server.sh
 Run ML pipelines:
 - [analytics/ml-pipelines/duration/README.md](./analytics/ml-pipelines/duration/README.md)
 
-Run web service: [services/rides/README.md](./services/rides/README.md)
+Deploy web service to Cloud Run: [services/rides/README.md](./services/rides/README.md)
+```bash
+export CONTAINER_REGISTRY_URL="$(bash ./infra/gcp/terraform/output.sh WEB_CONTAINER_REGISTRY_URL)"
+export MLFLOW_MODEL_URI=
+export MLFLOW_MODEL_VERSION=
+export REGION=us-east1
+bash services/rides/build_deploy.sh
+```
+
+Test service:
+```bash
+URL=  # Cloud Run service URL
+curl -X POST \
+    -H 'Content-type: application/json' \
+    -d '{"PULocationID": 43, "DOLocationID": 151, "trip_distance": 1.01}' \
+    "${URL}"
+```
