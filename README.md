@@ -28,3 +28,5 @@ bash ./infra/local/mlflow-server.sh
 
 Run ML pipelines:
 - [analytics/ml-pipelines/duration/README.md](./analytics/ml-pipelines/duration/README.md)
+
+Run web service: [services/rides/README.md](./services/rides/README.md)
