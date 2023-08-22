@@ -32,5 +32,5 @@ fi
 mkdir -p "${MLFLOW_HOME}"
 mlflow server \
     --backend-store-uri "${MLFLOW_BACKEND_STORE_URI}" \
-    --default-artifact-root "${MLFLOW_ARTIFACTS_DIR}" \
+    --default-artifact-root "${MLFLOW_ARTIFACTS_URI}" \
     "$@"
