@@ -3,7 +3,7 @@
 
 ## Up and running
 
-Provision infrastructure:
+Provision cloud infrastructure on existing Google Cloud project:
 - if using [Cloud Shell](https://console.cloud.google.com/?cloudshell=true):
     ```bash
     export GCP_PROJECT_ID="${DEVSHELL_PROJECT_ID}"
