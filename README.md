@@ -18,3 +18,10 @@ Provision infrastructure:
 
     bash ./infra/gcp/terraform/apply.sh
     ```
+
+MLflow server (locally):
+- create virtual environment and check more server options at [infra/local/README.md](infra/local/README.md)
+```bash
+export GS_ML_MODELS_BUCKET_ID="$(bash ./infra/gcp/terraform/output.sh GS_ML_MODELS_BUCKET_ID)"
+bash ./infra/local/mlflow-server.sh
+```
