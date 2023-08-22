@@ -2,6 +2,8 @@
 
 Online service for prediction of duration taxi ride.
 
+![](diagram.png)
+
 You can request online service:
 ```bash
 URL=https://rides-ucpkfmi6pq-ue.a.run.app/predict  # Cloud Run service URL
