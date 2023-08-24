@@ -1,6 +1,11 @@
 # MLOps project - course from DataTalksClub
 
-Online service for prediction of duration taxi ride.
+Online web service for prediction of duration taxi ride based on public datasets provided by the New York City Taxi & Limousine Commission - TLC regarding taxi trips.
+
+General technical implementation descriptions:
+- The model is developed as a scikit-learn pipeline for preprocessing and using a linear regression model, experiment tracking is performed through MLflow, and model registry is accomplished through MLflow and Google Cloud Storage as models sink. This development stage is performed through Prefect orchestrator for accessing datasets and training model.
+- The prediction service is deployed to Google Cloud where Cloud Build along with Artifact Registry are used to containerize the service and Cloud Run is used as execution environment for exposing as web service through Flask framework and MLflow to access models registry sink.
+- All cloud resources are provisioned using Terraform and most reproducibility steps are automated with Bash scripts.
 
 ![](diagram.png)
 
@@ -13,7 +18,7 @@ curl -X POST \
     "${URL}"
 ```
 
-## Up and running
+## Up and running (reproducibility)
 
 Provision cloud infrastructure on existing Google Cloud project:
 - if using [Cloud Shell](https://console.cloud.google.com/?cloudshell=true):

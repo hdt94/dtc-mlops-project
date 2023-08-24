@@ -1,3 +1,5 @@
+Datasets available at: https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
+
 Download Parquet raw source data files:
 - default directory is `source/`; [.gitignore](.gitignore) includes `source/`
 ```bash
