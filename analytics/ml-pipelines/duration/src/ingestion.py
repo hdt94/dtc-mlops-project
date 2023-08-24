@@ -1,9 +1,11 @@
 import pandas as pd
+from prefect import task
 
 
 BASE_URL = "https://d37ci6vzurychx.cloudfront.net"
 
 
+@task(retries=3, retry_delay_seconds=30)
 def read_dataframe(
     vehicle_type: str,
     year_month: str,

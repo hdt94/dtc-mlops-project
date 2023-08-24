@@ -1,0 +1,11 @@
+deployments:
+  - name: local-ml-duration
+    version: null
+    tags: []
+    description: null
+    entrypoint: src/duration_linear.py:duration_linear_main
+    work_pool:
+      name: local-process-ml-duration
+      work_queue_name: null
+      job_variables: {}
+    schedule: null

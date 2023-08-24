@@ -29,3 +29,10 @@ bash mlflow-server.sh --workers 2
 export GS_ML_MODELS_BUCKET_ID=
 bash mlflow-server.sh --host 0.0.0.0 --port 8080 --workers 2
 ```
+
+## Prefect
+
+Start Prefect server using Docker Compose:
+```
+docker compose up prefect_server
+```

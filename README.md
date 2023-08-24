@@ -38,6 +38,11 @@ export GS_ML_MODELS_BUCKET_ID="$(bash ./infra/gcp/terraform/output.sh GS_ML_MODE
 bash ./infra/local/mlflow-server.sh
 ```
 
+Prefect server:
+```
+docker compose -f infra/local/docker-compose.yaml up prefect_server
+```
+
 Run ML pipelines:
 - [analytics/ml-pipelines/duration/README.md](./analytics/ml-pipelines/duration/README.md)
 

@@ -1,6 +1,7 @@
 *.env
 venv*/
 
+.prefect/
 
 # Following is copied from https://github.com/github/gitignore/blob/main/Python.gitignore
 

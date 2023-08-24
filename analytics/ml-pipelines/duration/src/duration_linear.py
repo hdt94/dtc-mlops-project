@@ -9,6 +9,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 import mlflow
+from prefect import flow, task
 
 from ingestion import read_dataframe
 
@@ -61,6 +62,7 @@ def preprocess_features(data: Union[Dict, List, pd.DataFrame]) -> List[Dict]:
     return features_records
 
 
+@task(log_prints=True)
 def train_model(df_train: pd.DataFrame, df_val: pd.DataFrame) -> None:
     y_train = df_train["duration"].values
     y_val = df_val["duration"].values
@@ -83,12 +85,13 @@ def train_model(df_train: pd.DataFrame, df_val: pd.DataFrame) -> None:
     return None
 
 
-def duration_xgboost_main(
-    mlflow_experiment: str,
+@flow(log_prints=True)
+def duration_linear_main(
     mlflow_uri: str,
     train_year_month: str,
     val_year_month: str,
     vehicle_type: str,
+    mlflow_experiment: str = "nyc-taxi-ride-duration",
     source: str = None,
 ) -> None:
     """Main training pipeline"""
@@ -117,4 +120,4 @@ if __name__ == "__main__":
     parser.add_argument("--val-year-month", "--val", default="2022-02")
     parser.add_argument("--vehicle-type", default="green")
     kwargs = vars(parser.parse_args())
-    duration_xgboost_main(**kwargs)
+    duration_linear_main(**kwargs)
