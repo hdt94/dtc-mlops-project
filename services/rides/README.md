@@ -1,3 +1,16 @@
+# Rides service (prediction)
+
+Test online service by using simple web page at root home from Cloud Run service URL: https://rides-ucpkfmi6pq-ue.a.run.app/
+
+Test online service through command line:
+```bash
+URL=https://rides-ucpkfmi6pq-ue.a.run.app/predict  # Cloud Run service URL
+curl -X POST \
+    -H 'Content-type: application/json' \
+    -d '{"PULocationID": 43, "DOLocationID": 151, "trip_distance": 1.01}' \
+    "${URL}"
+```
+
 ## Deploy locally
 
 Create environment:
@@ -16,7 +29,9 @@ export MLFLOW_MODEL_VERSION=
 python3 src/app.py
 ```
 
-Test endpoint:
+Test service by using simple web page at root home: http://localhost:4000/
+
+Test service through command line:
 ```bash
 URL=http://localhost:4000/predict
 curl -X POST \
@@ -37,7 +52,9 @@ export REGION=us-east1
 bash build_deploy.sh
 ```
 
-Test service:
+Test service by using simple web page at root home from Cloud Run service URL.
+
+Test service through command line:
 - check request example in [root README.md](/README.md)
 ```bash
 URL=  # Cloud Run service URL

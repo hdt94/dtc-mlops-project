@@ -1,11 +1,4 @@
 FROM python:3.8-slim
-# ARG MLFLOW_MODEL_URI
-# ARG MLFLOW_MODEL_VERSION
-
-# ENV MLFLOW_MODEL_URI
-# ENV MLFLOW_MODEL_VERSION
-# ENV MLFLOW_MODEL_URI=$MLFLOW_MODEL_URI
-# ENV MLFLOW_MODEL_VERSION=$MLFLOW_MODEL_VERSION
 
 ENV APP_HOME /app
 ENV PYTHONUNBUFFERED True
@@ -17,4 +10,5 @@ COPY Pipfile Pipfile.lock ./
 RUN pipenv install --deploy --system
 
 COPY src/ ./
+COPY templates/ ./templates/
 CMD exec gunicorn --bind :$PORT app:app

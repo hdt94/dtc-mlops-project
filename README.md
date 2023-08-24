@@ -2,14 +2,9 @@
 
 Online web service for prediction of duration taxi ride based on public datasets provided by the New York City Taxi & Limousine Commission - TLC regarding taxi trips.
 
-General technical implementation descriptions:
-- The model is developed as a scikit-learn pipeline for preprocessing and using a linear regression model, experiment tracking is performed through MLflow, and model registry is accomplished through MLflow and Google Cloud Storage as models sink. This development stage is performed through Prefect orchestrator for accessing datasets and training model.
-- The prediction service is deployed to Google Cloud where Cloud Build along with Artifact Registry are used to containerize the service and Cloud Run is used as execution environment for exposing as web service through Flask framework and MLflow to access models registry sink.
-- All cloud resources are provisioned using Terraform and most reproducibility steps are automated with Bash scripts.
+Test online service by using simple web page at root home from Cloud Run service URL: https://rides-ucpkfmi6pq-ue.a.run.app/
 
-![](diagram.png)
-
-You can request online service:
+Test online service through command line:
 ```bash
 URL=https://rides-ucpkfmi6pq-ue.a.run.app/predict  # Cloud Run service URL
 curl -X POST \
@@ -17,6 +12,13 @@ curl -X POST \
     -d '{"PULocationID": 43, "DOLocationID": 151, "trip_distance": 1.01}' \
     "${URL}"
 ```
+
+General technical implementation descriptions:
+- The model is developed as a scikit-learn pipeline for preprocessing and using a linear regression model, experiment tracking is performed through MLflow, and model registry is accomplished through MLflow and Google Cloud Storage as models sink. This development stage is performed through Prefect orchestrator for accessing datasets and training model.
+- The prediction service is deployed to Google Cloud where Cloud Build along with Artifact Registry are used to containerize the service and Cloud Run is used as execution environment for exposing as web service through Flask framework and MLflow to access models registry sink.
+- All cloud resources are provisioned using Terraform and most reproducibility steps are automated with Bash scripts.
+
+![](diagram.png)
 
 ## Up and running (reproducibility)
 

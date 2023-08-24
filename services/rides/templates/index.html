@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction duration taxi ride</title>
+</head>
+<body>
+    <h1>Prediction of duration taxi ride</h1>
+    <p>Enter ride JSON considering location IDs between 1-265 and distance less than 100:</p>
+    <form action="/predict" method="post">
+        <code>
+            <pre><textarea id="ride" rows="6" cols="50" placeholder="Enter JSON request body"
+            >{"PULocationID": 43, "DOLocationID": 151, "trip_distance": 1.01}</textarea></pre></code>
+        <button type="submit">Request prediction</button>
+    </form>
+    <p>WARNING: prediction could be inconsistent as model has not been curated</p>
+    <div id="response-box">
+        <p>Response:</p>
+        <pre><code id="response"></code></pre>
+    </div>
+    <script>
+        const response_box = document.getElementById('response-box')
+        const response_textarea = document.getElementById('response')
+        const ride_textarea = document.getElementById('ride')
+
+        response_box.style.display = "none"
+        ride_textarea.textContent = JSON.stringify(JSON.parse(ride_textarea.textContent), null, 2);
+
+        document.querySelector('form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const requestBody = ride_textarea.value;
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: requestBody
+            });
+            const responseData = await response.json();
+
+            response_box.style.display = ""
+            response_textarea.textContent = JSON.stringify(responseData, null, 2);
+        });
+    </script>
+</body>
+</html>
