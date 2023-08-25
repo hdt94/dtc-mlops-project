@@ -27,14 +27,14 @@ Run pipeline:
 export PREFECT_HOME="${PWD}/.prefect"
 
 # accessing datasets from web source
-prefect deployment run duration-linear-main/local-ml-duration \
+prefect deployment run duration-linear-baseline-main/local-ml-duration \
     --param mlflow_uri=http://localhost:5000 \
     --param train_year_month=2023-01 \
     --param val_year_month=2023-02 \
     --param vehicle_type=green
 
 # defining experiment; accessing datasets from web source
-prefect deployment run duration-linear-main/local-ml-duration \
+prefect deployment run duration-linear-baseline-main/local-ml-duration \
     --param mlflow_experiment=my-custom-experiment \
     --param mlflow_uri=http://localhost:5000 \
     --param train_year_month=2023-01 \
@@ -43,7 +43,7 @@ prefect deployment run duration-linear-main/local-ml-duration \
 
 # accessing datasets from local directory source
 LOCAL_DATA_DIR=
-prefect deployment run duration-linear-main/local-ml-duration \
+prefect deployment run duration-linear-baseline-main/local-ml-duration \
     --param mlflow_uri=http://localhost:5000 \
     --param train_year_month=2023-01 \
     --param val_year_month=2023-02 \

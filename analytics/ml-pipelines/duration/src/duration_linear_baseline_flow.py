@@ -86,7 +86,7 @@ def train_model(df_train: pd.DataFrame, df_val: pd.DataFrame) -> None:
 
 
 @flow(log_prints=True)
-def duration_linear_main(
+def duration_linear_baseline_main(
     mlflow_uri: str,
     train_year_month: str,
     val_year_month: str,
@@ -120,4 +120,4 @@ if __name__ == "__main__":
     parser.add_argument("--val-year-month", "--val", default="2022-02")
     parser.add_argument("--vehicle-type", default="green")
     kwargs = vars(parser.parse_args())
-    duration_linear_main(**kwargs)
+    duration_linear_baseline_main(**kwargs)
