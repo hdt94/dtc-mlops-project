@@ -11,7 +11,7 @@ from sklearn.preprocessing import FunctionTransformer
 import mlflow
 from prefect import flow, task
 
-from ingestion import read_dataframe
+from io_tasks import read_dataframe
 
 
 def to_dataframe(data: Union[Dict, List, pd.DataFrame]) -> pd.DataFrame:

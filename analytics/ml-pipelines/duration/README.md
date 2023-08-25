@@ -55,14 +55,14 @@ Alternatively, running flow directly although there is no trace of deployment ne
 export PREFECT_HOME="${PWD}/.prefect"
 
 # accessing datasets from web source
-python3 src/duration_linear.py \
+python3 src/duration_linear_baseline_flow.py \
     --mlflow-uri http://localhost:5000 \
     --train 2023-01 \
     --val 2023-02 \
     --vehicle-type green
 
 # defining experiment; accessing datasets from web source
-python3 src/duration_linear.py \
+python3 src/duration_linear_baseline_flow.py \
     --mlflow-experiment my-custom-experiment \
     --mlflow-uri http://localhost:5000 \
     --train 2023-01 \
@@ -71,7 +71,7 @@ python3 src/duration_linear.py \
 
 # accessing datasets from local directory source
 LOCAL_DATA_DIR=
-python3 src/duration_linear.py \
+python3 src/duration_linear_baseline_flow.py \
     --mlflow-uri http://localhost:5000 \
     --source "${LOCAL_DATA_DIR}" \
     --train 2023-01 \
