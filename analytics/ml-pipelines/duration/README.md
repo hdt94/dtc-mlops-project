@@ -27,14 +27,14 @@ Run pipeline:
 export PREFECT_HOME="${PWD}/.prefect"
 
 # accessing datasets from web source
-prefect deployment run duration-linear-main/local-ml-duration \
+prefect deployment run duration-linear-baseline-main/local-ml-duration \
     --param mlflow_uri=http://localhost:5000 \
     --param train_year_month=2023-01 \
     --param val_year_month=2023-02 \
     --param vehicle_type=green
 
 # defining experiment; accessing datasets from web source
-prefect deployment run duration-linear-main/local-ml-duration \
+prefect deployment run duration-linear-baseline-main/local-ml-duration \
     --param mlflow_experiment=my-custom-experiment \
     --param mlflow_uri=http://localhost:5000 \
     --param train_year_month=2023-01 \
@@ -43,7 +43,7 @@ prefect deployment run duration-linear-main/local-ml-duration \
 
 # accessing datasets from local directory source
 LOCAL_DATA_DIR=
-prefect deployment run duration-linear-main/local-ml-duration \
+prefect deployment run duration-linear-baseline-main/local-ml-duration \
     --param mlflow_uri=http://localhost:5000 \
     --param train_year_month=2023-01 \
     --param val_year_month=2023-02 \
@@ -55,14 +55,14 @@ Alternatively, running flow directly although there is no trace of deployment ne
 export PREFECT_HOME="${PWD}/.prefect"
 
 # accessing datasets from web source
-python3 src/duration_linear.py \
+python3 src/duration_linear_baseline_flow.py \
     --mlflow-uri http://localhost:5000 \
     --train 2023-01 \
     --val 2023-02 \
     --vehicle-type green
 
 # defining experiment; accessing datasets from web source
-python3 src/duration_linear.py \
+python3 src/duration_linear_baseline_flow.py \
     --mlflow-experiment my-custom-experiment \
     --mlflow-uri http://localhost:5000 \
     --train 2023-01 \
@@ -71,10 +71,21 @@ python3 src/duration_linear.py \
 
 # accessing datasets from local directory source
 LOCAL_DATA_DIR=
-python3 src/duration_linear.py \
+python3 src/duration_linear_baseline_flow.py \
     --mlflow-uri http://localhost:5000 \
     --source "${LOCAL_DATA_DIR}" \
     --train 2023-01 \
     --val 2023-02 \
     --vehicle-type green
+```
+
+Connecting to metrics database:
+```bash
+export PGPASSWORD=
+psql -d mlops -U postgres -h localhost
+```
+
+Querying metrics table:
+```sql
+SELECT context, experiment_id, model_name, model_version, name, timestamp FROM metrics;
 ```

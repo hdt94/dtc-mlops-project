@@ -3,7 +3,7 @@ deployments:
     version: null
     tags: []
     description: null
-    entrypoint: src/duration_linear.py:duration_linear_main
+    entrypoint: src/duration_linear_baseline_flow.py:duration_linear_baseline_main
     work_pool:
       name: local-process-ml-duration
       work_queue_name: null

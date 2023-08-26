@@ -1,4 +1,15 @@
 services:
+  ml_metrics_db:
+    image: postgres:14
+    environment:
+      - POSTGRES_DB=mlops
+      - POSTGRES_PASSWORD=${ML_METRICS_DB_PASSWORD:-uTcdEf43}
+      - POSTGRES_USER=postgres
+    ports:
+      - 5432:5432
+    restart: on-failure
+    volumes:
+      - "${ML_METRICS_DB_SCHEMA_DIR:-../../analytics/ml-monitoring/metrics/schemas/}:/docker-entrypoint-initdb.d/"
   prefect_server:
     image: prefecthq/prefect:2.11.4-python3.8
     entrypoint:

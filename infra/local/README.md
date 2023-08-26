@@ -1,5 +1,5 @@
-
 ## MLflow
+- TODO integrate MLflow with Docker Compose, requiring creating a service account and mapping credentials to container
 
 MLflow setup:
 - Optionally, use same virtual environment from `analytics/` by activating it
@@ -30,9 +30,9 @@ export GS_ML_MODELS_BUCKET_ID=
 bash mlflow-server.sh --host 0.0.0.0 --port 8080 --workers 2
 ```
 
-## Prefect
+## Metrics database + Prefect
 
 Start Prefect server using Docker Compose:
 ```
-docker compose up prefect_server
+docker compose up ml_metrics_db prefect_server
 ```
