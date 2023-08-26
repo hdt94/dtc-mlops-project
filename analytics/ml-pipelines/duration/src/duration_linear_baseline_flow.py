@@ -1,4 +1,5 @@
 import argparse
+import tempfile
 from typing import Dict, List, Union
 
 import pandas as pd
@@ -9,9 +10,21 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 import mlflow
+from evidently import ColumnMapping
 from prefect import flow, task
 
-from io_tasks import read_dataframe
+from DefaultReport import DefaultReport
+from io_tasks import get_dataset_uri, read_dataframe
+
+
+MODEL_NAME = "duration_linear"
+
+FEATURES_CAT = ["DOLocationID", "PULocationID"]
+FEATURES_NUM = ["trip_distance"]
+PREDICTION = "duration_in_minutes_prediction"
+TARGET = "duration_in_minutes"
+
+FEATURES = FEATURES_CAT + FEATURES_NUM
 
 
 def to_dataframe(data: Union[Dict, List, pd.DataFrame]) -> pd.DataFrame:
@@ -41,8 +54,8 @@ def preprocess_duration(data: Union[Dict, List, pd.DataFrame]) -> pd.DataFrame:
     else:
         raise ValueError("Unsupported datetime columns")
 
-    df["duration"] = duration.dt.total_seconds() / 60
-    df = df[(df["duration"] >= 1) & (df["duration"] <= 60)]
+    df["duration_in_minutes"] = duration.dt.total_seconds() / 60
+    df = df[(df["duration_in_minutes"] >= 1) & (df["duration_in_minutes"] <= 60)]
 
     return df
 
@@ -50,39 +63,56 @@ def preprocess_duration(data: Union[Dict, List, pd.DataFrame]) -> pd.DataFrame:
 def preprocess_features(data: Union[Dict, List, pd.DataFrame]) -> List[Dict]:
     df = to_dataframe(data)
 
-    categorical = ["PULocationID", "DOLocationID"]
-    numerical = ["trip_distance"]
-
-    df[categorical] = df[categorical].astype(str)
+    df[FEATURES_CAT] = df[FEATURES_CAT].astype(str)
     df["PU_DO"] = df["PULocationID"] + "_" + df["DOLocationID"]
 
-    features_df = df[numerical + ["PU_DO"]]
+    features_df = df[FEATURES_NUM + ["PU_DO"]]
     features_records = features_df.to_dict(orient="records")
 
     return features_records
 
 
+@flow(retries=2, retry_delay_seconds=60)
+def report_metrics(df_current, df_reference, run_id, reports_dir=None):
+    column_mapping = ColumnMapping(
+        categorical_features=FEATURES_CAT,
+        numerical_features=FEATURES_NUM,
+        prediction=PREDICTION,
+        target=TARGET,
+    )
+    report = DefaultReport(column_mapping)
+    report.run(current_data=df_current, reference_data=df_reference)
+
+    if reports_dir:
+        file_path = report.write_to_html(reports_dir, MODEL_NAME, run_id)
+        mlflow.log_artifact(file_path, artifact_path="report")
+    else:
+        with tempfile.TemporaryDirectory() as reports_dir:
+            file_path = report.write_to_html(reports_dir, MODEL_NAME, run_id)
+            mlflow.log_artifact(file_path, artifact_path="report")
+
+    report.write_to_database("training", run_id, MODEL_NAME, run_id)
+
+
 @task(log_prints=True)
 def train_model(df_train: pd.DataFrame, df_val: pd.DataFrame) -> None:
-    y_train = df_train["duration"].values
-    y_val = df_val["duration"].values
+    y_train = df_train[TARGET].values
+    y_val = df_val[TARGET].values
 
-    with mlflow.start_run():
-        pipeline = Pipeline(
-            [
-                ("preprocess_features", FunctionTransformer(preprocess_features)),
-                ("DictVectorizer", DictVectorizer()),
-                ("LinearRegression", LinearRegression()),
-            ]
-        )
-        pipeline.fit(df_train, y_train)
-        mlflow.sklearn.log_model(pipeline, artifact_path="model")
+    pipeline = Pipeline(
+        [
+            ("preprocess_features", FunctionTransformer(preprocess_features)),
+            ("DictVectorizer", DictVectorizer()),
+            ("LinearRegression", LinearRegression()),
+        ]
+    )
+    pipeline.fit(df_train[FEATURES], y_train)
+    mlflow.sklearn.log_model(pipeline, artifact_path="model")
 
-        y_pred = pipeline.predict(df_val)
-        rmse = mean_squared_error(y_val, y_pred, squared=False)
-        mlflow.log_metric("rmse", rmse)
+    pred_train = pipeline.predict(df_train[FEATURES])
+    pred_val = pipeline.predict(df_val[FEATURES])
 
-    return None
+    return (pred_train, pred_val)
 
 
 @flow(log_prints=True)
@@ -92,6 +122,7 @@ def duration_linear_baseline_main(
     val_year_month: str,
     vehicle_type: str,
     mlflow_experiment: str = "nyc-taxi-ride-duration",
+    reports_dir: str = None,
     source: str = None,
 ) -> None:
     """Main training pipeline"""
@@ -99,16 +130,29 @@ def duration_linear_baseline_main(
     mlflow.set_tracking_uri(mlflow_uri)
     mlflow.set_experiment(mlflow_experiment)
 
+    source_uri_train = get_dataset_uri(vehicle_type, train_year_month, source)
+    source_uri_val = get_dataset_uri(vehicle_type, val_year_month, source)
+
     print("Reading data files...")
-    df_train = read_dataframe(vehicle_type, train_year_month, source)
-    df_val = read_dataframe(vehicle_type, val_year_month, source)
+    df_train = read_dataframe(source_uri_train)
+    df_val = read_dataframe(source_uri_val)
 
     print("Preprocessing dataframes...")
-    df_train = preprocess_duration(df_train)
-    df_val = preprocess_duration(df_val)
+    df_train = preprocess_duration(df_train)[FEATURES + [TARGET]]
+    df_val = preprocess_duration(df_val)[FEATURES + [TARGET]]
 
-    print("Training model...")
-    train_model(df_train, df_val)
+    with mlflow.start_run() as run:
+        print("Training model...")
+        pred_train, pred_val = train_model(df_train, df_val)
+
+        df_reference = df_train.assign(**({PREDICTION: pred_train}))
+        df_current = df_val.assign(**({PREDICTION: pred_val}))
+
+        reference_dataset = mlflow.data.from_pandas(df_reference, source_uri_train)
+        mlflow.log_input(reference_dataset, context="training")
+
+        print("Reporting metrics...")
+        report_metrics(df_current, df_reference, run.info.run_id, reports_dir)
 
 
 if __name__ == "__main__":
@@ -116,6 +160,7 @@ if __name__ == "__main__":
     parser.add_argument("--mlflow-experiment", default="nyc-taxi-ride-duration")
     parser.add_argument("--mlflow-uri", default="localhost:5000")
     parser.add_argument("--source", default=None)
+    parser.add_argument("--reports-dir", default=None)
     parser.add_argument("--train-year-month", "--train", default="2022-01")
     parser.add_argument("--val-year-month", "--val", default="2022-02")
     parser.add_argument("--vehicle-type", default="green")

@@ -78,3 +78,14 @@ python3 src/duration_linear_baseline_flow.py \
     --val 2023-02 \
     --vehicle-type green
 ```
+
+Connecting to metrics database:
+```bash
+export PGPASSWORD=
+psql -d mlops -U postgres -h localhost
+```
+
+Querying metrics table:
+```sql
+SELECT context, experiment_id, model_name, model_version, name, timestamp FROM metrics;
+```
