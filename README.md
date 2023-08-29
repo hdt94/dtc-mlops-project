@@ -22,23 +22,42 @@ General technical implementation descriptions:
 
 ## Up and running (reproducibility)
 
+### Cloud resources
+Pre-requisites:
+- Unix-like system with following cli tools: bash, gcloud, jq, terraform
+
 Provision cloud infrastructure on existing Google Cloud project:
 - if using [Cloud Shell](https://console.cloud.google.com/?cloudshell=true):
     ```bash
-    export GCP_PROJECT_ID="${DEVSHELL_PROJECT_ID}"
     bash ./infra/gcp/terraform/apply.sh
     ```
 - if using other than [Cloud Shell](https://console.cloud.google.com/?cloudshell=true):
     ```bash
     gcloud auth application-default login
 
-    export GCP_PROJECT_ID=
+    GCP_PROJECT_ID=
     gcloud config set project "${GCP_PROJECT_ID}"
 
     bash ./infra/gcp/terraform/apply.sh
     ```
 
-MLflow server (locally):
+Share `output.json` file at [infra/gcp/terraform/](infra/gcp/terraform/) if using other computer/instance for development, this enables development with no direct access to Terraform state. Copy to same location in development.
+
+### Development
+Pre-requisites:
+- Unix-like system with following cli tools: bash, gcloud, jq
+- Docker Compose (for development only)
+- Python>=3.8 distribution
+
+Setup access to Google Cloud if missing:
+```bash
+gcloud auth application-default login
+
+GCP_PROJECT_ID=
+gcloud config set project "${GCP_PROJECT_ID}"
+```
+
+MLflow server:
 - create virtual environment and check more server options at [infra/local/README.md](infra/local/README.md)
 ```bash
 export GS_ML_MODELS_BUCKET_ID="$(bash ./infra/gcp/terraform/output.sh GS_ML_MODELS_BUCKET_ID)"
