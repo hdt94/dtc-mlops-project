@@ -29,7 +29,7 @@ Pre-requisites:
 Provision cloud infrastructure on existing Google Cloud project:
 - if using [Cloud Shell](https://console.cloud.google.com/?cloudshell=true):
     ```bash
-    bash ./infra/gcp/terraform/apply.sh
+    make terraform_apply
     ```
 - if using other than [Cloud Shell](https://console.cloud.google.com/?cloudshell=true):
     ```bash
@@ -38,7 +38,7 @@ Provision cloud infrastructure on existing Google Cloud project:
     GCP_PROJECT_ID=
     gcloud config set project "${GCP_PROJECT_ID}"
 
-    bash ./infra/gcp/terraform/apply.sh
+    make terraform_apply
     ```
 
 Share `output.json` file at [infra/gcp/terraform/](infra/gcp/terraform/) if using other computer/instance for development, this enables development with no direct access to Terraform state. Copy to same location in development.
@@ -60,13 +60,12 @@ gcloud config set project "${GCP_PROJECT_ID}"
 MLflow server:
 - create virtual environment and check more server options at [infra/local/README.md](infra/local/README.md)
 ```bash
-export GS_ML_MODELS_BUCKET_ID="$(bash ./infra/gcp/terraform/output.sh GS_ML_MODELS_BUCKET_ID)"
-bash ./infra/local/mlflow-server.sh
+make mlflow_server
 ```
 
 Metrics database and Prefect server:
 ```
-docker compose -f infra/local/docker-compose.yaml up ml_metrics_db prefect_server
+make compose_up
 ```
 
 Run ML pipelines:
@@ -74,11 +73,10 @@ Run ML pipelines:
 
 Deploy web service to Cloud Run: [services/rides/README.md](./services/rides/README.md)
 ```bash
-export CONTAINER_REGISTRY_URL="$(bash ./infra/gcp/terraform/output.sh WEB_CONTAINER_REGISTRY_URL)"
 export MLFLOW_MODEL_URI=
 export MLFLOW_MODEL_VERSION=
 export REGION=us-east1
-bash services/rides/build_deploy.sh
+make rides_build_deploy
 ```
 
 Test service:
