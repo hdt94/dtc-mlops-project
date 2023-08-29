@@ -29,6 +29,11 @@ else
     MLFLOW_ARTIFACTS_URI="gs://${GS_ML_MODELS_BUCKET_ID}/models_mlflow"
 fi
 
+if [[ -z "$(which mlflow)" && -d "${LOCAL_DIR}/venv" ]]; then
+    source "${LOCAL_DIR}/venv/bin/activate"
+fi
+echo "mlflow: $(which mlflow)"
+
 mkdir -p "${MLFLOW_HOME}"
 mlflow server \
     --backend-store-uri "${MLFLOW_BACKEND_STORE_URI}" \

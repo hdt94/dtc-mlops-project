@@ -58,9 +58,11 @@ gcloud config set project "${GCP_PROJECT_ID}"
 ```
 
 MLflow server:
-- create virtual environment and check more server options at [infra/local/README.md](infra/local/README.md)
 ```bash
 make mlflow_server
+
+# Using custom Python interpreter for compatibility
+make mlflow_server PYTHON_BASE_INTERPRETER=python3.8
 ```
 
 Metrics database and Prefect server:

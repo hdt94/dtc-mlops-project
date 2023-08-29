@@ -1,9 +1,16 @@
 MLflow setup:
 - Optionally, use same virtual environment from `analytics/` by activating it
 ```bash
+# Manual venv
 python3.8 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
+# Using python3 >= 3.8
+REQUIREMENTS=requirements.txt ../utils/venv.sh
+
+# Using custom Python interpreter for compatibility
+PYTHON_BASE_INTERPRETER=python3.8 REQUIREMENTS=requirements.txt ../utils/venv.sh
 ```
 
 MLflow server:
