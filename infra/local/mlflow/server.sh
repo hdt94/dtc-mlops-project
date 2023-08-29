@@ -2,18 +2,18 @@
 #
 # Examples:
 #   # listening on default localhost:5000
-#   bash mlflow-server.sh --workers 2
+#   bash server.sh --workers 2
 #
 #   # listening all interfaces on custom port
-#   bash mlflow-server.sh --host 0.0.0.0 --port 8080 --workers 2
+#   bash server.sh --host 0.0.0.0 --port 8080 --workers 2
 #
 #   # storing artifacts to Google Cloud Storage
 #   export GS_ML_MODELS_BUCKET_ID=
-#   bash mlflow-server.sh --workers 2
+#   bash server.sh --workers 2
 #
 #   # listening all interfaces on custom port; storing artifacts to Google Cloud Storage
 #   export GS_ML_MODELS_BUCKET_ID=
-#   bash mlflow-server.sh --host 0.0.0.0 --port 8080 --workers 2
+#   bash server.sh --host 0.0.0.0 --port 8080 --workers 2
 
 set -e
 
@@ -28,6 +28,11 @@ if [[ -z "${GS_ML_MODELS_BUCKET_ID}" ]]; then
 else
     MLFLOW_ARTIFACTS_URI="gs://${GS_ML_MODELS_BUCKET_ID}/models_mlflow"
 fi
+
+if [[ -z "$(which mlflow)" && -d "${LOCAL_DIR}/venv" ]]; then
+    source "${LOCAL_DIR}/venv/bin/activate"
+fi
+echo "mlflow: $(which mlflow)"
 
 mkdir -p "${MLFLOW_HOME}"
 mlflow server \
